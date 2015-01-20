@@ -1,0 +1,22 @@
+# arquivos de cache do python
+__pycache__/
+*.pyc
+
+# gerados por setup.py (sdist|bdist)
+build/
+dist/
+*.egg-info/
+
+# usados pelo vim
+*.swp
+
+# usados pelo rope
+.ropeproject/
+
+# usados pelo eclipse
+/.project
+/.pydevproject
+/.settings/
+
+# backup
+*~
