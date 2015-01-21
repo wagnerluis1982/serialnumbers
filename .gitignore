@@ -20,3 +20,6 @@ dist/
 
 # backup
 *~
+
+# projeto
+/serialnumber/db/
