@@ -1,10 +1,14 @@
+# encoding=utf8
+
 from flask import (Flask, request, session, g, redirect, url_for, abort,
                    render_template, flash)
 app = Flask('serialnumber')
 
-from . import model, settings
+from . import settings
 app.config.from_object(settings)
-Session = model.session_factory(app.config['DATABASE'], app.config['DEBUG'])
+
+from . model import session_factory, SerialNumber
+Session = session_factory(app.config['DATABASE'], app.config['DEBUG'])
 
 @app.before_request
 def before_request():
@@ -16,3 +20,24 @@ def teardown_request(exception):
     if db_session is not None:
         db_session.commit()
         db_session.close()
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        if request.form['username'] != app.config['USERNAME']:
+            error = u"Nome de usuário inválido"
+        elif request.form['password'] != app.config['PASSWORD']:
+            error = u"Senha inválida"
+        else:
+            session['logged_in'] = True
+            flash(u"Você está conectado")
+            return redirect(url_for('list_serials'))
+    return render_template('login.html', error=error)
+
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    flash(u"Você está desconectado")
+    return redirect(url_for('list_serials'))

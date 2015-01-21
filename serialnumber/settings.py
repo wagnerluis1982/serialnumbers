@@ -5,3 +5,4 @@ DEBUG = bool(os.environ.get('DEBUG'))
 SECRET_KEY = '?pcuPdF|C>nCAp7ac=fcq?nLa8=TAb'
 USERNAME = 'admin'
 PASSWORD = 'admin'
+APP_TITLE = 'Serial Numbers'
