@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block body %}
+  {% if session.logged_in %}
+    <form action="{{ url_for('import_xml') }}" method=post
+          enctype=multipart/form-data class=import>
+        <strong>Arquivo XML:</strong>
+        <input type=file name=xml-file>
+        <input type=submit value=Importar>
+      </dl>
+    </form>
+  {% endif %}
+  <table border=1 class=list>
+    <tr><th>Nota Fiscal <th>Data <th>Fornecedor <th>Produto <th>Número de Série
+  {% for serial in serials %}
+    <tr><td class="nowrap center">
+          <a href="#">{{ serial.document.number }}</a>
+        <td class="nowrap center">
+          <a href="#">{{ serial.document.date|dateformat }}</a>
+        <td>
+          <a href="#">{{ serial.document.supplier.name }}</a>
+        <td class=nolink>
+          <a>{{ serial.product.name }}</a>
+        <td class="nowrap center link">
+          <a href="#" title="Clique para alterar o número de série">
+              {{ serial.number|default('', true) }}
+          </a>
+  {% else %}
+    <tr><td class=center colspan=5>Nenhum número de série registrado!
+  {% endfor %}
+  </table>
+{% endblock %}

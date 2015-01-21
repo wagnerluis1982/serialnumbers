@@ -22,6 +22,20 @@ def teardown_request(exception):
         db_session.close()
 
 
+@app.template_filter('dateformat')
+def date_filter(s, fmt="%d/%m/%Y"):
+    return s.strftime(fmt)
+
+
+@app.route('/')
+def list_serials():
+    resultset = g.db_session.query(SerialNumber)
+    return render_template('list_serials.html', serials=resultset)
+
+@app.route('/import', methods=['POST'])
+def import_xml():
+    return redirect(url_for('list_serials'))
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
