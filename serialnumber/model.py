@@ -41,6 +41,9 @@ class SerialNumber(Base):
 
 class Document(Base):
     __tablename__ = 'documents'
+    __table_args__ = (
+        UniqueConstraint('number', 'supplier_id'),
+    )
 
     id = Column(Integer, primary_key=True)
     number = Column(Integer, nullable=False)
@@ -55,6 +58,9 @@ class Document(Base):
 
 class Product(Base):
     __tablename__ = 'products'
+    __table_args__ = (
+        UniqueConstraint('name', 'supplier_id'),
+    )
 
     id = Column(Integer, primary_key=True)
     name = Column(String(255), nullable=False)

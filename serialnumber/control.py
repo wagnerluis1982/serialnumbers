@@ -4,10 +4,10 @@ from flask import (Flask, request, session, g, redirect, url_for, abort,
                    render_template, flash)
 app = Flask('serialnumber')
 
-from . import settings
+from . import util, settings
 app.config.from_object(settings)
 
-from . model import session_factory, SerialNumber
+from . model import session_factory, Supplier, Product, Document, SerialNumber
 Session = session_factory(app.config['DATABASE'], app.config['DEBUG'])
 
 @app.before_request
@@ -34,6 +34,36 @@ def list_serials():
 
 @app.route('/import', methods=['POST'])
 def import_xml():
+    if not session.get('logged_in'):
+        abort(401)
+    xml_file = request.files['xml-file']
+    if xml_file.mimetype != 'text/xml':
+        flash(u"Arquivo enviado deve ser do tipo XML", 'error')
+    else:
+        xml_doc = util.parse_nfe_document(xml_file)
+        # supplier
+        cnpj = xml_doc['supplier.cnpj']
+        supplier = g.db_session.query(Supplier).filter_by(cnpj=cnpj).first() \
+            or Supplier(cnpj=cnpj, name=xml_doc['supplier.name'])
+        # document
+        number = xml_doc['number']
+        document = g.db_session.query(Document).filter_by(number=number).\
+            filter_by(supplier=supplier).first()
+        # products, serialnumbers
+        if document is None:
+            document = Document(number=number, date=xml_doc['date'],
+                                supplier=supplier)
+            for prod_name in xml_doc['products']:
+                product = g.db_session.query(Product).\
+                    filter_by(name=prod_name).\
+                    filter_by(supplier=supplier).first() \
+                    or Product(name=prod_name, supplier=supplier)
+                sn = SerialNumber(product=product, document=document)
+                g.db_session.add(sn)
+            flash(u"Uma nova nota foi importada com sucesso")
+        else:
+            flash(u"Essa nota já foi importada anteriormente", 'error')
+
     return redirect(url_for('list_serials'))
 
 @app.route('/login', methods=['GET', 'POST'])
