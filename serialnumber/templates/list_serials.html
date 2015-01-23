@@ -9,7 +9,7 @@
       </dl>
     </form>
   {% endif %}
-  <table border=1 class=list>
+  <table class=list>
     <tr><th>Nota Fiscal <th>Data <th>Fornecedor <th>Produto <th>Número de Série
   {% for serial in serials %}
     <tr><td class="nowrap center">
@@ -28,4 +28,19 @@
     <tr><td class=center colspan=5>Nenhum número de série registrado!
   {% endfor %}
   </table>
+  <script>
+    fn_hover = function() { $(this).toggleClass("link-hover"); };
+    fn_press = function() { $(this).toggleClass("link-active"); };
+    $('table.list td a').each(function() {
+        var td = $(this).parent()
+        td.mouseover(fn_hover).mouseout(fn_hover);
+        if ($(this).attr('href') !== undefined) {
+            td.css("cursor", "pointer");
+            td.mouseup(fn_press).mousedown(fn_press);
+            td.click(function() {
+                location.href = $(this).find('a').attr('href');
+            });
+        }
+    });
+  </script>
 {% endblock %}
