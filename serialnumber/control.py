@@ -29,7 +29,8 @@ def date_filter(s, fmt="%d/%m/%Y"):
 
 @app.route('/')
 def list_serials():
-    resultset = g.db_session.query(SerialNumber)
+    resultset = g.db_session.query(SerialNumber).join(Document).join(Product).\
+        order_by(Document.date.desc())
     return render_template('list_serials.html', serials=resultset)
 
 @app.route('/import', methods=['POST'])
@@ -55,12 +56,13 @@ def import_xml():
         if document is None:
             document = Document(number=number, date=xml_doc['date'],
                                 supplier=supplier)
-            for prod_name in xml_doc['products']:
+            for prod in xml_doc['products']:
                 product = g.db_session.query(Product).\
-                    filter_by(name=prod_name).\
+                    filter_by(name=prod['name']).\
                     filter_by(supplier=supplier).first() \
-                    or Product(name=prod_name, supplier=supplier)
-                sn = SerialNumber(product=product, document=document)
+                    or Product(name=prod['name'], supplier=supplier)
+                sn = SerialNumber(product=product, document=document,
+                                  quantity=prod['qnt'])
                 g.db_session.add(sn)
             flash(u"Uma nova nota foi importada com sucesso")
         else:

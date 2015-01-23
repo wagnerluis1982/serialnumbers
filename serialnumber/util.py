@@ -19,7 +19,8 @@ def parse_nfe_document(filename):
     version = float(xinfNFe.get("versao"))
     f = {'id': "ide", 'number': "nNF", 'date': "dhEmi",
          'sup': "emit", 'sup.cnpj': "CNPJ", 'sup.name': "xNome",
-         'detail': "det", 'prod': "prod", 'prod.name': "xProd"}
+         'detail': "det", 'prod': "prod", 'prod.name': "xProd",
+         'prod.qnt': "qCom"}
     if version == 3.1:
         pass
     elif version == 2.0:
@@ -34,7 +35,9 @@ def parse_nfe_document(filename):
     doc['supplier.name'] = elem(xsup, f['sup.name']).text
 
     doc['products'] = products = []
-    for xprod in iterelem(xinfNFe, f['detail'], f['prod'], f['prod.name']):
-        products.append(xprod.text)
+    for xprod in iterelem(xinfNFe, f['detail'], f['prod']):
+        prod = {'name': elem(xprod, f['prod.name']).text,
+                'qnt': int(elem(xprod, f['prod.qnt']).text)}
+        products.append(prod)
 
     return doc

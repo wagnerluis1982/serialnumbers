@@ -10,7 +10,8 @@
     </form>
   {% endif %}
   <table class=list>
-    <tr><th>Nota Fiscal <th>Data <th>Fornecedor <th>Produto <th>Número de Série
+    <tr><th>Nota Fiscal <th>Data <th>Fornecedor <th>Qnt. <th>Produto
+        <th>Número de Série
   {% for serial in serials %}
     <tr><td class="nowrap center">
           <a href="#">{{ serial.document.number }}</a>
@@ -18,6 +19,8 @@
           <a href="#">{{ serial.document.date|dateformat }}</a>
         <td>
           <a href="#">{{ serial.document.supplier.name }}</a>
+        <td class="center nolink">
+          <a>{{ serial.quantity }}</a>
         <td class=nolink>
           <a>{{ serial.product.name }}</a>
         <td class="nowrap center link">

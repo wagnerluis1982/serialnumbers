@@ -30,7 +30,8 @@ class SerialNumber(Base):
     id = Column(Integer, primary_key=True)
     product_id = Column(Integer, ForeignKey('products.id'), nullable=False)
     document_id = Column(Integer, ForeignKey('documents.id'), nullable=False)
-    number = Column(String(50), nullable=True)
+    quantity = Column(Integer, nullable=False)
+    number = Column(String)
 
     product = relationship('Product', backref='serialnumbers')
     document = relationship('Document', backref='serialnumbers')
