@@ -16,17 +16,26 @@ def parse_nfe_document(filename):
     tree = ET.parse(filename)
     infNFe = elem(tree, "NFe", "infNFe")
 
-    ide = elem(infNFe, "ide")
-    doc['number'] = int(elem(ide, "nNF").text)
-    doc['date'] = date(*map(int, elem(ide, "dhEmi").text[0:10].split('-')))
+    version = float(infNFe.get("versao"))
+    f = {'id': "ide", 'number': "nNF", 'date': "dhEmi",
+         'sup': "emit", 'sup.cnpj': "CNPJ", 'sup.name': "xNome",
+         'sale': "det", 'prod': "prod", 'prod.name': "xProd"}
+    if version == 3.1:
+        pass
+    elif version == 2.0:
+        f.update({'date': "dEmi"})
 
-    emit = elem(infNFe, "emit")
-    doc['supplier.cnpj'] = elem(emit, "CNPJ").text
-    doc['supplier.name'] = elem(emit, "xNome").text
+    ide = elem(infNFe, f['id'])
+    doc['number'] = int(elem(ide, f['number']).text)
+    doc['date'] = date(*map(int, elem(ide, f['date']).text[0:10].split('-')))
 
-    det = elem(infNFe, "det")
+    emit = elem(infNFe, f['sup'])
+    doc['supplier.cnpj'] = elem(emit, f['sup.cnpj']).text
+    doc['supplier.name'] = elem(emit, f['sup.name']).text
+
+    det = elem(infNFe, f['sale'])
     doc['products'] = products = []
-    for prod in iterelem(det, "prod"):
-        products.append(elem(prod, "xProd").text)
+    for prod in iterelem(det, f['prod']):
+        products.append(elem(prod, f['prod.name']).text)
 
     return doc
