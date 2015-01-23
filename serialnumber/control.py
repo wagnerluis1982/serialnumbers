@@ -37,7 +37,9 @@ def import_xml():
     if not session.get('logged_in'):
         abort(401)
     xml_file = request.files['xml-file']
-    if xml_file.mimetype != 'text/xml':
+    if xml_file.filename == '':
+        flash(u"Nenhum arquivo enviado", 'error')
+    elif xml_file.mimetype != 'text/xml':
         flash(u"Arquivo enviado deve ser do tipo XML", 'error')
     else:
         xml_doc = util.parse_nfe_document(xml_file)
