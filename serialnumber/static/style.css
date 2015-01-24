@@ -10,7 +10,7 @@ h2
     { font-size: 1.2em; }
 
 .page
-    { margin: 2em auto; width: 70%; border: 5px solid #ccc;
+    { margin: 2em auto; width: 85%; border: 5px solid #ccc;
       padding: 0.8em; background: white; }
 .entries
     { list-style: none; margin: 0; padding: 0; }
@@ -20,6 +20,12 @@ h2
     { margin-left: -1em; }
 form.import
     { border-bottom: 1px solid #ccc; margin-top: 1em; }
+form.serials
+    { margin-top: 1em; }
+form.serials th
+    { text-align: right; }
+form.serials input[type=text]
+    { font-family: monospace; }
 .metanav
     { text-align: right; font-size: 0.8em; padding: 0.3em;
       margin-bottom: 1em; background: #fafafa; }
@@ -29,21 +35,26 @@ form.import
     { background: #f0d6d6; padding: 0.5em; }
 .nowrap
     { white-space: nowrap; }
+.left
+    { text-align: left; }
 .center
     { text-align: center; }
+.right
+    { text-align: right; }
+.mono
+    { font-family: monospace; }
 table.list
-    { border-collapse: collapse; margin-top: 1em; width: 100%; }
+    { border-collapse: separate; margin-top: 1em; font-size: .9em;
+      empty-cells: hide; width: 100%; }
 table.list th, table.list td
     { border: solid 2px #377ba8; vertical-align: middle; }
 table.list td a
     { text-decoration: none; color: inherit; }
-table.list td a:hover, .link-hover
-    { text-decoration: underline; color: Navy; }
-table.list td.link:hover
-    { background-color: lightgreen; }
-table.list td a:active, .link-active
+table.list td a:hover
+    { color: Navy; }
+table.list td a:active
     { color: MediumSlateBlue; }
-table.list td.nolink a:active
+table.list td a:not([href]):active
     { color: Navy; }
 input[type=file]:hover
     { cursor: pointer; }

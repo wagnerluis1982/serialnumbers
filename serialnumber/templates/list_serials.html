@@ -10,22 +10,24 @@
     </form>
   {% endif %}
   <table class=list>
-    <tr><th>Nota Fiscal <th>Data <th>Fornecedor <th>Qnt. <th>Produto
-        <th>Número de Série
+    <tr><th>Nota Fiscal <th>Data <th>Fornecedor <th>Qnt. <th>Produto <th>
   {% for serial in serials %}
     <tr><td class="nowrap center">
-          <a href="#">{{ serial.document.number }}</a>
+          <a>{{ serial.document.number }}</a>
         <td class="nowrap center">
-          <a href="#">{{ serial.document.date|dateformat }}</a>
+          <a>{{ serial.document.date|dateformat }}</a>
         <td>
-          <a href="#">{{ serial.document.supplier.name }}</a>
-        <td class="center nolink">
+          <a>{{ serial.document.supplier.name }}</a>
+        <td class="center">
           <a>{{ serial.quantity }}</a>
         <td class=nolink>
           <a>{{ serial.product.name }}</a>
-        <td class="nowrap center link">
-          <a href="#" title="Clique para alterar o número de série">
-              {{ serial.number|default('', true) }}
+        <td class="nowrap center">
+        {% set verb, filename = serial.number and ("ver", "information.png")
+                                               or ("inserir", "add.png") %}
+          <a href="#"
+             title="Clique para {{ verb }} os números de séries">
+            <img src="{{ url_for('static', filename=filename) }}">
           </a>
   {% else %}
     <tr><td class=center colspan=5>Nenhum número de série registrado!
