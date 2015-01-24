@@ -37,7 +37,7 @@ def parse_nfe_document(filename):
     doc['products'] = products = []
     for xprod in iterelem(xinfNFe, f['detail'], f['prod']):
         prod = {'name': elem(xprod, f['prod.name']).text,
-                'qnt': int(elem(xprod, f['prod.qnt']).text)}
+                'qnt': int(float(elem(xprod, f['prod.qnt']).text))}
         products.append(prod)
 
     return doc
