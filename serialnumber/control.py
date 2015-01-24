@@ -26,12 +26,26 @@ def teardown_request(exception):
 def date_filter(s, fmt="%d/%m/%Y"):
     return s.strftime(fmt)
 
+@app.template_filter('split')
+def split_filter(s, sep=None):
+    return s.split(sep)
+
 
 @app.route('/')
 def list_serials():
     resultset = g.db_session.query(SerialNumber).join(Document).join(Product).\
         order_by(Document.date.desc())
     return render_template('list_serials.html', serials=resultset)
+
+@app.route('/update/<int:serial_id>', methods=['GET', 'POST'])
+def update_serials(serial_id):
+    if not session.get('logged_in'):
+        abort(401)
+    if request.method == 'POST':
+        flash(u"Números de série registrados com sucesso")
+        return redirect(url_for('list_serials'))
+    sn = g.db_session.query(SerialNumber).filter_by(id=serial_id).first()
+    return render_template('update_serials.html', serial=sn)
 
 @app.route('/import', methods=['POST'])
 def import_xml():

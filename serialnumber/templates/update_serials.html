@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block body %}
+  <h2>Registro dos números de série</h2>
+  <form action="{{ url_for('update_serials', serial_id=serial.id) }}"
+        method=post class="serials">
+    <table>
+    {% set items = serial.number and serial.number|split(',')
+                                  or ['']*serial.quantity %}
+    {% for i in range(serial.quantity) %}
+      <tr><th>{{ i+1 }}
+          <td><input type=text name=serial value="{{ items[i] }}">
+    {% endfor %}
+      <tr><td><td><input type=submit value=Registrar>
+    </table>
+  </form>
+{% endblock %}

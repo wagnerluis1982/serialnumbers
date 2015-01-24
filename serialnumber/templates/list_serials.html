@@ -25,7 +25,7 @@
         <td class="nowrap center">
         {% set verb, filename = serial.number and ("ver", "information.png")
                                                or ("inserir", "add.png") %}
-          <a href="#"
+          <a href="{{ url_for('update_serials', serial_id=serial.id) }}"
              title="Clique para {{ verb }} os números de séries">
             <img src="{{ url_for('static', filename=filename) }}">
           </a>
