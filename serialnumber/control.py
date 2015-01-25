@@ -87,6 +87,8 @@ def update_serials(serial_id):
 
 @app.route('/import', methods=['POST'])
 def import_xml():
+    url = url_for('list_serials')
+
     if not session.get('logged_in'):
         abort(401)
     xml_file = request.files['xml-file']
@@ -116,11 +118,12 @@ def import_xml():
                 sn = SerialNumber(product=product, document=document,
                                   quantity=prod['qnt'])
                 g.db_session.add(sn)
+            url += "?nota=%d" % number
             flash(u"Uma nova nota foi importada com sucesso")
         else:
             flash(u"Essa nota já foi importada anteriormente", 'error')
 
-    return redirect(url_for('list_serials'))
+    return redirect(url)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
