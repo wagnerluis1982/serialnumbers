@@ -41,10 +41,18 @@ def list_serials():
 def update_serials(serial_id):
     if not session.get('logged_in'):
         abort(401)
+
+    query = g.db_session.query(SerialNumber).filter_by(id=serial_id)
+    sn = query.first()
     if request.method == 'POST':
-        flash(u"Números de série registrados com sucesso")
+        if sn:
+            serials = ','.join(request.form.getlist('serial'))
+            query.update({'number': serials})
+            flash(u"Números de série registrados com sucesso")
+        else:
+            flash(u"Não foi possível registrar os números de série")
         return redirect(url_for('list_serials'))
-    sn = g.db_session.query(SerialNumber).filter_by(id=serial_id).first()
+
     return render_template('update_serials.html', serial=sn)
 
 @app.route('/import', methods=['POST'])
