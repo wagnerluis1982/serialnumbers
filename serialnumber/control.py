@@ -34,16 +34,16 @@ def split_filter(s, sep=None):
 
 
 def get_search(s):
+    from werkzeug import MultiDict
+    d = MultiDict()
     if s:
-        from werkzeug import MultiDict
-        d = MultiDict()
         for arg in s.split():
             kv = arg.split(':')
             if len(kv) == 1:
                 d.add('sn', arg)
             else:
                 d.add(*kv)
-        return d
+    return d
 
 
 @app.route('/')
@@ -52,10 +52,17 @@ def list_serials():
         order_by(Document.date.desc())
 
     search = get_search(request.args.get('s'))
+    search.update({
+        'nota': request.args.getlist('nota'),
+    })
     if search:
         if 'sn' in search:
             ft = or_(*[SerialNumber.number.like("%{0}%".format(sn))
                        for sn in search.getlist('sn')])
+            query = query.filter(ft)
+        if 'nota' in search:
+            ft = or_(*[Document.number == nota
+                       for nota in search.getlist('nota')])
             query = query.filter(ft)
 
     return render_template('list_serials.html', serials=query)
