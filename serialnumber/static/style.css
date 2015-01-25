@@ -10,6 +10,8 @@ h2
     { font-size: 1.2em; }
 h1 a, h2 a
     { text-decoration: none; }
+dt
+    { font-weight: bold; }
 
 .page
     { margin: 2em auto; width: 85%; border: 5px solid #ccc;
@@ -30,6 +32,15 @@ h1 a, h2 a
     {}
 form.serials
     { margin-top: 1em; }
+form.serials dl
+    { overflow: hidden; }
+form.serials dt
+    { clear: both; }
+form.serials dt,
+form.serials dd
+    { display: block; float: left; }
+form.serials dd
+    { margin-left: .25em; }
 form.serials th
     { text-align: right; }
 form.serials input[type=text]

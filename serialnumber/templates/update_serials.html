@@ -3,6 +3,16 @@
   <h2>Registro dos números de série</h2>
   <form action="{{ url_for('update_serials', serial_id=serial.id) }}"
         method=post class="serials">
+    <dl>
+      <dt>Nota Fiscal:
+        <dd>{{ serial.document.number }}
+      <dt>Data:
+        <dd>{{ serial.document.date|dateformat }}
+      <dt>Fornecedor:
+        <dd>{{ serial.document.supplier.name }}
+      <dt>Produto:
+        <dd>{{ serial.product.name }}
+    </dl>
     <table>
     {% set items = serial.number and serial.number|split(',')
                                   or ['']*serial.quantity %}
