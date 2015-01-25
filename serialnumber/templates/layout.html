@@ -3,7 +3,7 @@
 <link rel=stylesheet type=text/css
       href="{{ url_for('static', filename='style.css') }}">
 <div class=page>
-  <h1>{{ config['APP_TITLE'] }}</h1>
+  <h1><a href="{{ url_for('list_serials') }}">{{ config['APP_TITLE'] }}</a></h1>
   <div class=metanav>
   {% if not session.logged_in %}
     <a href="{{ url_for('login') }}">entrar</a>
@@ -11,7 +11,7 @@
     <a href="{{ url_for('logout') }}">sair</a>
   {% endif %}
   </div>
-    {% if error %}<p class=error><strong>Erro:</strong> {{ error }}{% endif %}
+  {% if error %}<p class=error><strong>Erro:</strong> {{ error }}{% endif %}
   {% for category, message in get_flashed_messages(with_categories=true) %}
     <div class={{ category }}>{{ message }}</div>
   {% endfor %}
