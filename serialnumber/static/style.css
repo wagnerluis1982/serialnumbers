@@ -18,8 +18,12 @@ h2
     { margin: 0.8em 1.2em; }
 .entries li h2
     { margin-left: -1em; }
-form.import
-    { border-bottom: 1px solid #ccc; margin-top: 1em; }
+.forms
+    { border-bottom: 1px solid #ccc; margin-top: 1em; overflow: hidden; }
+.forms #import
+    { float: left; }
+.forms #filter
+    { float: right; }
 form.serials
     { margin-top: 1em; }
 form.serials th

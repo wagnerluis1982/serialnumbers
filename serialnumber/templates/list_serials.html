@@ -1,13 +1,18 @@
 {% extends "layout.html" %}
 {% block body %}
   {% if session.logged_in %}
-    <form action="{{ url_for('import_xml') }}" method=post
-          enctype=multipart/form-data class=import>
+    <div class=forms>
+      <form id= import action="{{ url_for('import_xml') }}" method=post
+            enctype=multipart/form-data>
         <strong>Arquivo XML:</strong>
         <input type=file name=xml-file>
         <input type=submit value=Importar>
-      </dl>
-    </form>
+      </form>
+      <form id=filter action="{{ url_for('list_serials') }}" method=get>
+        <strong>Pesquisa:</strong>
+        <input type=text name=s value="{{ request.args['s'] }}">
+      </form>
+    </div>
   {% endif %}
   <table class=list>
     <tr><th>Nota Fiscal <th>Data <th>Fornecedor <th>Qnt. <th>Produto <th>

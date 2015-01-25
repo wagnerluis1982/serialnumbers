@@ -10,6 +10,8 @@ app.config.from_object(settings)
 from . model import session_factory, Supplier, Product, Document, SerialNumber
 Session = session_factory(app.config['DATABASE'], app.config['DEBUG'])
 
+from sqlalchemy import or_
+
 @app.before_request
 def before_request():
     g.db_session = Session()
@@ -31,11 +33,32 @@ def split_filter(s, sep=None):
     return s.split(sep)
 
 
+def get_search(s):
+    if s:
+        from werkzeug import MultiDict
+        d = MultiDict()
+        for arg in s.split():
+            kv = arg.split(':')
+            if len(kv) == 1:
+                d.add('sn', arg)
+            else:
+                d.add(*kv)
+        return d
+
+
 @app.route('/')
 def list_serials():
-    resultset = g.db_session.query(SerialNumber).join(Document).join(Product).\
+    query = g.db_session.query(SerialNumber).join(Document).join(Product).\
         order_by(Document.date.desc())
-    return render_template('list_serials.html', serials=resultset)
+
+    search = get_search(request.args.get('s'))
+    if search:
+        if 'sn' in search:
+            ft = or_(*[SerialNumber.number.like("%{0}%".format(sn))
+                       for sn in search.getlist('sn')])
+            query = query.filter(ft)
+
+    return render_template('list_serials.html', serials=query)
 
 @app.route('/update/<int:serial_id>', methods=['GET', 'POST'])
 def update_serials(serial_id):
