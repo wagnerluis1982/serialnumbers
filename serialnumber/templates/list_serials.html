@@ -15,7 +15,8 @@
     </form>
   </div>
   <table class=list>
-    <tr><th>Nota Fiscal <th>Data <th>Fornecedor <th>Qnt. <th>Produto <th>
+    <tr><th>Nota Fiscal <th>Data <th>Fornecedor <th>Qnt. <th>Produto
+        {{ "<th>"|safe if session.logged_in else '' }}
   {% for serial in serials %}
     <tr><td class="nowrap center">
           <a>{{ serial.document.number }}</a>
@@ -27,6 +28,7 @@
           <a>{{ serial.quantity }}</a>
         <td class=nolink>
           <a>{{ serial.product.name }}</a>
+    {% if session.logged_in %}
         <td class="nowrap center">
         {% set verb, filename = serial.number and ("ver", "information.png")
                                                or ("inserir", "add.png") %}
@@ -34,6 +36,7 @@
              title="Clique para {{ verb }} os números de séries">
             <img src="{{ url_for('static', filename=filename) }}">
           </a>
+    {% endif %}
   {% else %}
     <tr><td class=center colspan=5>Nenhum número de série registrado!
   {% endfor %}
