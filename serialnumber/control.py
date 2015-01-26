@@ -138,14 +138,13 @@ def import_xml():
 def login():
     error = None
     if request.method == 'POST':
-        if request.form['username'] != app.config['USERNAME']:
-            error = u"Nome de usuário inválido"
-        elif request.form['password'] != app.config['PASSWORD']:
-            error = u"Senha inválida"
-        else:
+        users = app.config['USERS']
+        if users.get(request.form['username']) == request.form['password']:
             session['logged_in'] = True
             flash(u"Você está conectado")
             return redirect(url_for('list_serials'))
+        else:
+            error = u"Nome de usuário ou senha inválido"
     return render_template('login.html', error=error)
 
 @app.route('/logout')
