@@ -10,6 +10,7 @@ app.config.from_object(settings)
 from . model import session_factory, Supplier, Product, Document, SerialNumber
 Session = session_factory(app.config['DATABASE'], app.config['DEBUG'])
 
+from werkzeug import MultiDict
 from sqlalchemy import or_
 
 @app.before_request
@@ -32,9 +33,16 @@ def date_filter(s, fmt="%d/%m/%Y"):
 def split_filter(s, sep=None):
     return s.split(sep)
 
+@app.template_filter('multijoin')
+def multijoin_filter(mdict, sepin, sepout):
+    if mdict:
+        kwargs = dict({'multi': True} if isinstance(mdict, MultiDict) else ())
+        return sepout.join([sepin.join(kv) for kv in mdict.items(**kwargs)])
+    else:
+        return ""
+
 
 def get_search(s):
-    from werkzeug import MultiDict
     d = MultiDict()
     if s:
         for arg in s.split():
@@ -64,6 +72,7 @@ def list_serials():
             ft = or_(*[Document.number == nota
                        for nota in search.getlist('nota')])
             query = query.filter(ft)
+        g.search = search
 
     return render_template('list_serials.html', serials=query)
 

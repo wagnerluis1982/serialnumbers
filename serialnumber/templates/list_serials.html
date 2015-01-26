@@ -11,7 +11,8 @@
   {% endif %}
     <form id=filter action="{{ url_for('list_serials') }}" method=get>
       <strong>Pesquisa:</strong>
-      <input type=text size=30 name=s value="{{ request.args['s'] }}">
+      <input type=text size=30 name=s
+             value="{{ g.search|multijoin(":", " ") }}">
     </form>
   </div>
   <table class=list>
