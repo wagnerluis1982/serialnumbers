@@ -5,6 +5,8 @@
 <div class=page>
   <h1><a href="{{ url_for('list_serials') }}">{{ config['APP_TITLE'] }}</a></h1>
   <div class=metanav>
+    <a href="{{ url_for('list_serials') }}">números de série</a> |
+    <a href="{{ url_for('list_documents') }}">notas fiscais</a> |
   {% if not session.logged_in %}
     <a href="{{ url_for('login') }}">entrar</a>
   {% else %}

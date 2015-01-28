@@ -42,14 +42,14 @@ def multijoin_filter(mdict, sepin, sepout):
         return ""
 
 
-def get_search(s):
+def get_search(s, empty, look):
     d = MultiDict()
     if s:
         for arg in s.split():
             kv = arg.split(':')
             if len(kv) == 1:
-                d.add('sn', arg)
-            else:
+                d.add(empty, arg)
+            elif kv[0] in look:
                 d.add(*kv)
     return d
 
@@ -59,7 +59,7 @@ def list_serials():
     query = g.db_session.query(SerialNumber).join(Document).join(Product).\
         order_by(Document.date.desc())
 
-    search = get_search(request.args.get('s'))
+    search = get_search(request.args.get('s'), empty='sn', look=['sn', 'nota'])
     search.update({
         'nota': request.args.getlist('nota'),
     })
@@ -75,6 +75,20 @@ def list_serials():
         g.search = search
 
     return render_template('list_serials.html', serials=query)
+
+@app.route('/documents')
+def list_documents():
+    query = g.db_session.query(Document).order_by(Document.date.desc())
+
+    search = get_search(request.args.get('s'), empty='nota', look=['nota'])
+    if search:
+        if 'nota' in search:
+            ft = or_(*[Document.number == nota
+                       for nota in search.getlist('nota')])
+            query = query.filter(ft)
+        g.search = search
+
+    return render_template('list_documents.html', docs=query)
 
 @app.route('/update/<int:serial_id>', methods=['GET', 'POST'])
 def update_serials(serial_id):

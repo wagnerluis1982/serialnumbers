@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block body %}
+  <div class=forms>
+  {% set s_args = g.search|multijoin(":", " ") %}
+    <form id=filter action="{{ url_for('list_documents') }}" method=get>
+      <strong>Pesquisa:</strong>
+      <input type=text size=30 name=s value="{{ s_args }}">
+    </form>
+  </div>
+
+  <h2>Notas Fiscais - {{ s_args and '(%s)' % s_args or 'Todas' }}</h2>
+  <table class=list>
+    <tr><th>Nota Fiscal <th>Data <th>Fornecedor
+  {% for doc in docs %}
+    <tr><td class="nowrap center">
+          <a>{{ doc.number }}</a>
+        <td class="nowrap center">
+          <a>{{ doc.date|dateformat }}</a>
+        <td>
+          <a>{{ doc.supplier.name }}</a>
+  {% else %}
+    <tr><td class=center colspan=5>Nenhuma nota fiscal registrada!
+  {% endfor %}
+  </table>
+{% endblock %}

@@ -9,12 +9,15 @@
       <input type=submit value=Importar>
     </form>
   {% endif %}
+
+  {% set s_args = g.search|multijoin(":", " ") %}
     <form id=filter action="{{ url_for('list_serials') }}" method=get>
       <strong>Pesquisa:</strong>
-      <input type=text size=30 name=s
-             value="{{ g.search|multijoin(":", " ") }}">
+      <input type=text size=30 name=s value="{{ s_args }}">
     </form>
   </div>
+
+  <h2>Números de Série - {{ s_args and '(%s)' % s_args or 'Todos' }}</h2>
   <table class=list>
     <tr><th>Nota Fiscal <th>Data <th>Fornecedor <th>Qnt. <th>Produto
         {{ "<th>"|safe if session.logged_in else '' }}
