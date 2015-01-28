@@ -18,7 +18,7 @@
   </div>
 
   <h2>Números de Série - {{ s_args and '(%s)' % s_args or 'Todos' }}</h2>
-  <table class=list>
+  <table id=serials class=list>
     <tr><th>Nota Fiscal <th>Data <th>Fornecedor <th>Qnt. <th>Produto
         {{ "<th>"|safe if session.logged_in else '' }}
   {% for serial in serials %}
@@ -45,4 +45,37 @@
     <tr><td class=center colspan=5>Nenhum número de série registrado!
   {% endfor %}
   </table>
+  <script>
+    $(function() {
+        //Created By: Brij Mohan
+        //Website: http://techbrij.com
+        function groupTable($rows, startIndex, total) {
+            if (total === 0) {
+                return;
+            }
+            var i, currentIndex = startIndex, count=1, lst=[];
+            var tds = $rows.find('td:eq('+ currentIndex +')');
+            var ctrl = $(tds[0]);
+            lst.push($rows[0]);
+            for (i=1; i<=tds.length; i++) {
+                if (ctrl.text() ==  $(tds[i]).text()) {
+                    count++;
+                    $(tds[i]).addClass('deleted');
+                    lst.push($rows[i]);
+                } else {
+                    if (count > 1) {
+                        ctrl.attr('rowspan', count);
+                        groupTable($(lst), startIndex+1, total-1)
+                    }
+                    count=1;
+                    lst = [];
+                    ctrl=$(tds[i]);
+                    lst.push($rows[i]);
+                }
+            }
+        }
+        groupTable($('#serials tr:has(td)'), 0, 3);
+        $('#serials .deleted').remove();
+    });
+</script>
 {% endblock %}
