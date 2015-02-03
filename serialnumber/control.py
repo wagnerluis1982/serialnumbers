@@ -42,6 +42,17 @@ def filter_query(search, query, fields):
 
     return query
 
+def parse_search(s):
+    search = {0: []}
+    if s:
+        for arg in s.split():
+            v = arg.split(':')
+            if len(v) == 1:
+                search[0].extend(v)
+            else:
+                search.setdefault(*v)
+    return search
+
 
 @app.route('/')
 def list_serials():
@@ -50,9 +61,13 @@ def list_serials():
         join(Product).\
         join(Supplier).\
         order_by(Document.date.desc())
-    query = filter_query(request.args.get('s'), query,
+
+    search = parse_search(request.args.get('s'))
+    query = filter_query(search[0], query,
                          (Document.number, Document.date, Supplier.name,
                           Product.name, SerialNumber.number))
+    if 'nota' in search:
+        query = query.filter(Document.number == search['nota'])
 
     return render_template('list_serials.html', serials=query)
 
@@ -86,10 +101,10 @@ def update_serials(serial_id):
 
 @app.route('/import', methods=['POST'])
 def import_xml():
-    url = url_for('list_serials')
-
     if not session.get('logged_in'):
         abort(401)
+
+    values = {}
     xml_file = request.files['xml-file']
     if xml_file.filename == '':
         flash(u"Nenhum arquivo enviado", 'error')
@@ -117,12 +132,12 @@ def import_xml():
                 sn = SerialNumber(product=product, document=document,
                                   quantity=prod['qnt'])
                 g.db_session.add(sn)
-            url += "?nota=%d" % number
+            values['s'] = "nota:%d" % number
             flash(u"Uma nova nota foi importada com sucesso")
         else:
             flash(u"Essa nota já foi importada anteriormente", 'error')
 
-    return redirect(url)
+    return redirect(url_for('list_serials', **values))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
