@@ -34,11 +34,10 @@ def split_filter(s, sep=None):
 
 
 def filter_query(search, query, fields):
-    if search:
-        for arg in search.split():
-            arg = "%{0}%".format(arg)
-            ft = or_(*[field.like(arg) for field in fields])
-            query = query.filter(ft)
+    for arg in search:
+        arg = "%{0}%".format(arg)
+        ft = or_(*[field.like(arg) for field in fields])
+        query = query.filter(ft)
 
     return query
 
