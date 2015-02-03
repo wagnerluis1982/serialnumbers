@@ -75,8 +75,12 @@ def list_documents():
     query = g.db_session.query(Document).\
         join(Supplier).\
         order_by(Document.date.desc())
-    query = filter_query(request.args.get('s'), query,
+
+    search = parse_search(request.args.get('s'))
+    query = filter_query(search[0], query,
                          (Document.number, Document.date, Supplier.name))
+    if 'nota' in search:
+        query = query.filter(Document.number == search['nota'])
 
     return render_template('list_documents.html', docs=query)
 
