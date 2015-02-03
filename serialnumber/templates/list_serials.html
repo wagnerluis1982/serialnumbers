@@ -19,8 +19,7 @@
 
   <h2>Números de Série - {{ s_args and '(%s)' % s_args or 'Todos' }}</h2>
   <table id=serials class=list>
-    <tr><th>Nota Fiscal <th>Data <th>Fornecedor <th>Qnt. <th>Produto
-        {{ "<th>"|safe if session.logged_in else '' }}
+    <tr><th>Nota Fiscal <th>Data <th>Fornecedor <th>Qnt. <th>Produto <th>
   {% for serial in serials %}
     <tr><td class="nowrap center">
           <a>{{ serial.document.number }}</a>
@@ -32,17 +31,13 @@
           <a>{{ serial.quantity }}</a>
         <td class=nolink>
           <a>{{ serial.product.name }}</a>
-    {% if session.logged_in %}
-        <td class="nowrap center">
-        {% set verb, filename = serial.number and ("ver", "information.png")
-                                               or ("inserir", "add.png") %}
+        <td class="nowrap center{{ '' if session.logged_in else ' disabled' }}">
           <a href="{{ url_for('update_serials', serial_id=serial.id) }}"
-             title="Clique para {{ verb }} os números de séries">
-            <img src="{{ url_for('static', filename=filename) }}">
+             title="Clique para ver os números de séries">
+            <img src="{{ url_for('static', filename='information.png') }}">
           </a>
-    {% endif %}
   {% else %}
-    <tr><td class=center colspan=5>Nenhum número de série registrado!
+    <tr><td class=center colspan=5>Nenhum número de série aqui!
   {% endfor %}
   </table>
   <script>
