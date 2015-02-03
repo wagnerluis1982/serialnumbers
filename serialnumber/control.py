@@ -10,7 +10,6 @@ app.config.from_object(settings)
 from . model import session_factory, Supplier, Product, Document, SerialNumber
 Session = session_factory(app.config['DATABASE'], app.config['DEBUG'])
 
-from werkzeug import MultiDict
 from sqlalchemy import or_
 
 @app.before_request
@@ -33,60 +32,37 @@ def date_filter(s, fmt="%d/%m/%Y"):
 def split_filter(s, sep=None):
     return s.split(sep)
 
-@app.template_filter('multijoin')
-def multijoin_filter(mdict, sepin, sepout):
-    if mdict:
-        kwargs = dict({'multi': True} if isinstance(mdict, MultiDict) else ())
-        return sepout.join([sepin.join(kv) for kv in mdict.items(**kwargs)])
-    else:
-        return ""
 
+def filter_query(search, query, fields):
+    if search:
+        for arg in search.split():
+            arg = "%{0}%".format(arg)
+            ft = or_(*[field.like(arg) for field in fields])
+            query = query.filter(ft)
 
-def get_search(s, empty, look):
-    d = MultiDict()
-    if s:
-        for arg in s.split():
-            kv = arg.split(':')
-            if len(kv) == 1:
-                d.add(empty, arg)
-            elif kv[0] in look:
-                d.add(*kv)
-    return d
+    return query
 
 
 @app.route('/')
 def list_serials():
-    query = g.db_session.query(SerialNumber).join(Document).join(Product).\
+    query = g.db_session.query(SerialNumber).\
+        join(Document).\
+        join(Product).\
+        join(Supplier).\
         order_by(Document.date.desc())
-
-    search = get_search(request.args.get('s'), empty='sn', look=['sn', 'nota'])
-    search.update({
-        'nota': request.args.getlist('nota'),
-    })
-    if search:
-        if 'sn' in search:
-            ft = or_(*[SerialNumber.number.like("%{0}%".format(sn))
-                       for sn in search.getlist('sn')])
-            query = query.filter(ft)
-        if 'nota' in search:
-            ft = or_(*[Document.number == nota
-                       for nota in search.getlist('nota')])
-            query = query.filter(ft)
-        g.search = search
+    query = filter_query(request.args.get('s'), query,
+                         (Document.number, Document.date, Supplier.name,
+                          Product.name, SerialNumber.number))
 
     return render_template('list_serials.html', serials=query)
 
 @app.route('/documents')
 def list_documents():
-    query = g.db_session.query(Document).order_by(Document.date.desc())
-
-    search = get_search(request.args.get('s'), empty='nota', look=['nota'])
-    if search:
-        if 'nota' in search:
-            ft = or_(*[Document.number == nota
-                       for nota in search.getlist('nota')])
-            query = query.filter(ft)
-        g.search = search
+    query = g.db_session.query(Document).\
+        join(Supplier).\
+        order_by(Document.date.desc())
+    query = filter_query(request.args.get('s'), query,
+                         (Document.number, Document.date, Supplier.name))
 
     return render_template('list_documents.html', docs=query)
 

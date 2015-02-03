@@ -10,7 +10,7 @@
     </form>
   {% endif %}
 
-  {% set s_args = g.search|multijoin(":", " ") %}
+  {% set s_args = request.args['s'] %}
     <form id=filter action="{{ url_for('list_serials') }}" method=get>
       <strong>Pesquisa:</strong>
       <input type=text size=30 name=s value="{{ s_args }}">
